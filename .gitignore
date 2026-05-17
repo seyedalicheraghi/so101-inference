@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Local backups (timestamped during dev)
+*.bak
+*.bak.*
+
+# Local rig calibration — copied from each user's data-collection host
+calibration.json
+calibration.json.bak.*
+
+# Diagnostics dropped by run_so101.py and rs_bridge.py
+/tmp/inference_diag/
