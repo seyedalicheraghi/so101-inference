@@ -14,7 +14,7 @@ set -euo pipefail
 
 STEP="${1:-7999}"
 CKPT_HOST="$HOME/src/openpi/checkpoints/pi05_so101_low_mem_finetune/so101_20260511_1638/${STEP}"
-PROMPT="${PROMPT:-Pick up the orange ball and place it in the red bucket.}"
+PROMPT="${PROMPT:-Pick up the white box and place it in the white target area.}"
 PORT="${PORT:-8000}"
 IMAGE="${IMAGE:-openpi-train:so101}"
 NAME="${NAME:-openpi-serve-so101}"

@@ -14,7 +14,7 @@ set -euo pipefail
 
 CKPT_PT="${CKPT_PT:-$HOME/src/openpi/checkpoints/pi05_so101_low_mem_finetune/so101_20260511_1638/015000/pretrained_model}"
 LEROBOT_VERSION="${LEROBOT_VERSION:-0.5.1}"
-PROMPT="${PROMPT:-Pick up the orange ball and place it in the red bucket.}"
+PROMPT="${PROMPT:-Pick up the white box and place it in the white target area.}"
 PORT="${PORT:-8000}"
 IMAGE="${IMAGE:-openpi-pi0.5:latest}"
 NAME="${NAME:-openpi-serve-so101-lerobot}"
