@@ -330,17 +330,19 @@ def make_v4l2_camera(idx: int, w: int = 640, h: int = 480, fps: int = 30,
     cap = cv2.VideoCapture(idx, cv2.CAP_V4L2)
     if not cap.isOpened():
         raise RuntimeError(f"Could not open /dev/video{idx}")
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, w)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, h)
-    cap.set(cv2.CAP_PROP_FPS, fps)
     for fourcc in ("MJPG", "YUYV"):
         cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*fourcc))
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, w)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, h)
+        cap.set(cv2.CAP_PROP_FPS, fps)
         ok, _ = cap.read()
         if ok:
+            actual_w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            actual_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
             for _ in range(warmup_frames):
                 cap.read()
             log.info("  /dev/video%d: opened %dx%d @ %s (%d warmup frames)",
-                     idx, w, h, fourcc, warmup_frames)
+                     idx, actual_w, actual_h, fourcc, warmup_frames)
             return cap
     cap.release()
     raise RuntimeError(f"/dev/video{idx} opened but no FOURCC produced frames at {w}x{h}")
