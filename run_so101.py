@@ -98,7 +98,7 @@ RS_BRIDGE_STALE_S    = 1.0        # warn if the .npy file is older than this
 class Args:
     host: str = "127.0.0.1"
     port: int = 8000
-    prompt: str = "Pick up the white box and place it in the white target area."
+    prompt: str = ""
     arm_port: str = "/dev/ttyACM0"
     # Top camera: read from rs_bridge .npy by default. Use --top-source v4l2
     # only if you've explicitly verified that /dev/video{cam_top} is the colour
@@ -413,7 +413,13 @@ def main(args: Args) -> int:
 
     log.info("Connecting to policy server ws://%s:%d ...", args.host, args.port)
     client = websocket_client_policy.WebsocketClientPolicy(host=args.host, port=args.port)
-    log.info("Server metadata keys: %s", list(client.get_server_metadata().keys()))
+    meta = client.get_server_metadata()
+    log.info("Server metadata keys: %s", list(meta.keys()))
+    if not args.prompt:
+        args.prompt = meta.get("default_prompt", "")
+        log.info("Using server default_prompt: %r", args.prompt)
+    else:
+        log.info("Using --prompt: %r", args.prompt)
 
     log.info("Loading calibration: %s", args.calibration or "(none)")
     calib = load_calibration(args.calibration)
