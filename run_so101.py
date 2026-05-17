@@ -348,11 +348,13 @@ def make_v4l2_camera(idx: int, w: int = 640, h: int = 480, fps: int = 30,
     raise RuntimeError(f"/dev/video{idx} opened but no FOURCC produced frames at {w}x{h}")
 
 
-def grab_v4l2(cap) -> np.ndarray:
+def grab_v4l2(cap, target_w: int = 640, target_h: int = 480) -> np.ndarray:
     import cv2
     ok, bgr = cap.read()
     if not ok:
         raise RuntimeError("Camera read failed")
+    if bgr.shape[1] != target_w or bgr.shape[0] != target_h:
+        bgr = cv2.resize(bgr, (target_w, target_h), interpolation=cv2.INTER_AREA)
     return cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 
 
