@@ -23,19 +23,15 @@ SERVE_PY="${SERVE_PY:-$HOME/src/inference/serve_lerobot.py}"
 [[ -d "$CKPT_PT"  ]] || { echo "ERROR: PyTorch ckpt not found: $CKPT_PT"  >&2; exit 1; }
 [[ -f "$SERVE_PY" ]] || { echo "ERROR: serve_lerobot.py not found: $SERVE_PY" >&2; exit 1; }
 
-CKPT_PT_C="${CKPT_PT/#$HOME\/src\/openpi/\/opt\/openpi-train}"
-
-# If the checkpoint path is a symlink, also mount the real target so the
-# container can follow it.
 CKPT_REAL="$(readlink -f "$CKPT_PT")"
 EXTRA_MOUNT=()
-if [[ "$CKPT_REAL" != "$CKPT_PT" ]]; then
-  # Mount the deepest stable ancestor (we mount $HOME/archive if applicable)
-  if [[ "$CKPT_REAL" == "$HOME/archive/"* ]]; then
-    EXTRA_MOUNT+=(-v "$HOME/archive:$HOME/archive:ro")
-  else
-    EXTRA_MOUNT+=(-v "$CKPT_REAL:$CKPT_REAL:ro")
-  fi
+if [[ "$CKPT_REAL" == "$HOME/src/openpi/"* ]]; then
+  # Already covered by the $HOME/src/openpi -> /opt/openpi-train mount below.
+  CKPT_PT_C="${CKPT_REAL/#$HOME\/src\/openpi/\/opt\/openpi-train}"
+else
+  # Bind-mount the checkpoint at the same path inside the container.
+  EXTRA_MOUNT+=(-v "$CKPT_REAL:$CKPT_REAL:ro")
+  CKPT_PT_C="$CKPT_REAL"
 fi
 
 docker rm -f "$NAME" >/dev/null 2>&1 || true
